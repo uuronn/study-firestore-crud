@@ -1,78 +1,85 @@
 import type { NextPage } from "next";
 import { db } from "../firebaseConfig";
-import { getDoc, doc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  setDoc,
+  addDoc,
+  collection
+  // getDocs
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 
-// // 単一の参照
-// const main = async () => {
-//   const docRef = doc(db, "cities", "test");
-//   const docSnap = await getDoc(docRef);
-
-//   // if (docSnap.exists()) {
-//   //   console.log("Document data:", docSnap.data().title);
-//   // } else {
-//   //   // doc.data() will be undefined in this case
-//   //   console.log("No such document!");
-//   // }
-
-//   return console.log(docSnap.id);
-// };
-
-// main();
-
-// // 複数の参照
-// const sub = async () => {
-//   const querySnapshot = await getDocs(collection(db, "cities"));
-
-//   return querySnapshot.forEach((doc) => {
-//     console.log(doc.id, " => ", doc.data());
-//     console.log(doc.data());
-//   });
-// };
-
-// sub();
-
-// // 書きかえる
-// const setDB = async () => {
-//   // Add a new document in collection "cities"
-//   await setDoc(doc(db, "cities", "test"), {
-//     name: "Los Angeles",
-//     state: "CA",
-//     country: "USA"
-//   });
-// };
-
-// setDB();
+interface Score {
+  miss: number;
+  correct: number;
+}
 
 const Home: NextPage = () => {
-  const [data, setData] = useState<object>();
-  // 単一の参照
+  const [data, setData] = useState<Score>();
+  // const [datas, setDatas] = useState<Score[]>([]);
+
+  // 追加
+  const addScore = async () => {
+    await addDoc(collection(db, "test"), {
+      gomi: "ggggg"
+    });
+  };
+
+  // 更新
+  const setScore = async () => {
+    await setDoc(doc(db, "users", "score"), {
+      miss: 10,
+      correct: 30
+    });
+  };
+
   useEffect(() => {
-    const main = async () => {
-      const docRef = doc(db, "cities", "test");
+    // 単一の参照
+    const refScore = async () => {
+      const docRef = doc(db, "users", "score");
       const docSnap = await getDoc(docRef);
       setData(docSnap.data());
-      // if (docSnap.exists()) {
-      //   console.log("Document data:", docSnap.data().title);
-      // } else {
-      //   // doc.data() will be undefined in this case
-      //   console.log("No such document!");
-      // }
-
-      // console.log(docSnap.data());
     };
-    main();
+    refScore();
+
+    //   const refsScroe = async () => {
+    //     const querySnapshot = await getDocs(collection(db, "users"));
+
+    //     return querySnapshot.forEach((doc) => {
+    //       // console.log(doc.id, " => ", doc.data());
+    //       // console.log(doc.data());
+    //       console.log(doc);
+
+    //       setDatas(doc);
+    //     });
+    //   };
+    //   refsScroe();
   }, []);
+
   useEffect(() => {
-    console.log(data);
+    if (data) {
+      console.log(data);
+    }
   }, [data]);
 
-  // console.log(posts._document.data.value.mapValue.fields.title.stringValue);
+  // useEffect(() => {
+  //   if (datas) {
+  //     console.log(datas);
+  //   }
+  // }, [datas]);
+
   return (
     <div>
       <h1>index</h1>
-      <h1>{data?.name}</h1>
-      {/* <h1>{posts._document.data.value.mapValue.fields.title.stringValue}</h1> */}
+      <h1>{data?.miss}</h1>
+      <h1>{data?.correct}</h1>
+      <button onClick={() => setScore()}>スコアを送信</button>
+      <button onClick={() => addScore()}>追加ボタン</button>
+      {/* {datas.map((item) => {
+        <h1>{item.correct}</h1>;
+        <h1>{item.correct}</h1>;
+      })} */}
     </div>
   );
 };
