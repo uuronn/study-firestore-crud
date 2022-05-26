@@ -3,6 +3,8 @@ import { initializeApp } from "firebase/app";
 // FireStoreへの接続情報の取得
 import { getFirestore } from "firebase/firestore";
 
+import { getStorage } from "firebase/storage";
+
 export const app = initializeApp({
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_APIKEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,3 +16,4 @@ export const app = initializeApp({
 });
 
 export const db = getFirestore(app);
+export const storage = getStorage(app);

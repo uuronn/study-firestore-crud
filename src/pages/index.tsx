@@ -5,8 +5,11 @@ import {
   doc,
   setDoc,
   addDoc,
-  collection
+  collection,
   // getDocs
+  deleteDoc,
+  updateDoc,
+  deleteField
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -17,6 +20,7 @@ interface Score {
 
 const Home: NextPage = () => {
   const [data, setData] = useState<Score>();
+  const [img, setImg] = useState();
   // const [datas, setDatas] = useState<Score[]>([]);
 
   // 追加
@@ -34,6 +38,18 @@ const Home: NextPage = () => {
     });
   };
 
+  // ドキュメントを削除
+  const deleteDocment = async () => {
+    await deleteDoc(doc(db, "users", "cQxpamAZDQzjSKLOtEur"));
+  };
+
+  // 特定のフィールドを削除
+  const deleteHandler = async () => {
+    await updateDoc(doc(db, "users", "cQxpamAZDQzjSKLOtEur"), {
+      mijss: deleteField()
+    });
+  };
+
   useEffect(() => {
     // 単一の参照
     const refScore = async () => {
@@ -42,6 +58,13 @@ const Home: NextPage = () => {
       setData(docSnap.data());
     };
     refScore();
+
+    const refImage = async () => {
+      const docRef = doc(db, "users", "image");
+      const docSnap = await getDoc(docRef);
+      setImg(docSnap.data());
+    };
+    refImage();
 
     //   const refsScroe = async () => {
     //     const querySnapshot = await getDocs(collection(db, "users"));
@@ -63,6 +86,12 @@ const Home: NextPage = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (img) {
+      console.log(img);
+    }
+  }, [img]);
+
   // useEffect(() => {
   //   if (datas) {
   //     console.log(datas);
@@ -76,6 +105,10 @@ const Home: NextPage = () => {
       <h1>{data?.correct}</h1>
       <button onClick={() => setScore()}>スコアを送信</button>
       <button onClick={() => addScore()}>追加ボタン</button>
+      <img src={img?.url} alt="" />
+      <button onClick={() => deleteHandler()}>フィールドを削除</button>
+      <button onClick={() => deleteDocment()}>ドキュメント削除</button>
+
       {/* {datas.map((item) => {
         <h1>{item.correct}</h1>;
         <h1>{item.correct}</h1>;
