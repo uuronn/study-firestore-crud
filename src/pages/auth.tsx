@@ -38,7 +38,7 @@ const Auth: NextPage = () => {
     if (uid) {
       const setDatas = async () => {
         await setDoc(doc(db, "tests", uid), {
-          test: "テスト",
+          test: uid,
           correct: 30
         });
         // console.log(uid);
