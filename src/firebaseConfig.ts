@@ -12,8 +12,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_APP_ID
 };
 
-console.log(firebaseConfig);
-
 export const firebase = initializeApp(firebaseConfig);
 export const auth = getAuth(firebase);
 export const db = getFirestore(firebase);

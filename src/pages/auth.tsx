@@ -2,7 +2,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { NextPage } from "next";
 import { auth } from "../firebaseConfig";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Auth: NextPage = () => {
   const [uid, setUid] = useState<string>("");
@@ -17,21 +17,34 @@ const Auth: NextPage = () => {
 
       setUid(res.user.uid);
     } catch (error) {
+      // console.log(auth.currentUser);
       console.error(error);
     }
   };
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setName(user.displayName);
-      console.log(user);
-      console.log(user.displayName);
-      const uid = user.uid;
-      console.log(uid);
-    } else {
-      console.log("else");
-    }
-  });
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setName(user.displayName);
+        setUid(user.uid);
+        console.log(user.uid);
+        // console.log(user);
+        // console.log(user.displayName);
+        // const uid = user.uid;
+        // console.log(uid);
+      } else {
+        console.log("ログインされていません");
+      }
+    });
+
+    // const indexFun = async () => {
+    //   const querySnapshot = await getDocs(collection(db, "tests"));
+    //   // console.log(querySnapshot);
+    //   console.log(uid);
+    // };
+
+    // indexFun();
+  }, []);
 
   // const email = "test";
   // const password = "testPass";
@@ -47,9 +60,10 @@ const Auth: NextPage = () => {
     <>
       <h1>title</h1>
       <button onClick={signIn}>this is test</button>
-      <p>ユーザー名: {uid}</p>
-      <p>ログイン中のユーザー: {name}</p>
+      <p>ユーザーuid: {uid}</p>
+      <p>ログイン中のユーザー名: {name}</p>
     </>
   );
 };
+
 export default Auth;

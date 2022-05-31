@@ -20,13 +20,13 @@ interface Score {
 
 const Home: NextPage = () => {
   const [data, setData] = useState<Score>();
-  const [img, setImg] = useState();
+  const [img, setImg] = useState<string>();
   // const [datas, setDatas] = useState<Score[]>([]);
 
   // 追加
   const addScore = async () => {
     await addDoc(collection(db, "test"), {
-      gomi: "ggggg"
+      gomi: "ggg"
     });
   };
 
@@ -62,6 +62,9 @@ const Home: NextPage = () => {
     const refImage = async () => {
       const docRef = doc(db, "users", "image");
       const docSnap = await getDoc(docRef);
+
+      if (!docSnap) throw new Error("docSnap取れてない");
+
       setImg(docSnap.data());
     };
     refImage();
