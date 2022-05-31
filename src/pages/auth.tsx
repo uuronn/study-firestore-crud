@@ -1,10 +1,12 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { NextPage } from "next";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const Auth: NextPage = () => {
+  const [data, setData] = useState<object>();
   const [uid, setUid] = useState<string>("");
   const [name, setName] = useState<string | null>("");
   const provider = new GoogleAuthProvider();
@@ -17,7 +19,6 @@ const Auth: NextPage = () => {
 
       setUid(res.user.uid);
     } catch (error) {
-      // console.log(auth.currentUser);
       console.error(error);
     }
   };
@@ -27,34 +28,36 @@ const Auth: NextPage = () => {
       if (user) {
         setName(user.displayName);
         setUid(user.uid);
-        console.log(user.uid);
-        // console.log(user);
-        // console.log(user.displayName);
-        // const uid = user.uid;
-        // console.log(uid);
       } else {
         console.log("ログインされていません");
       }
     });
-
-    // const indexFun = async () => {
-    //   const querySnapshot = await getDocs(collection(db, "tests"));
-    //   // console.log(querySnapshot);
-    //   console.log(uid);
-    // };
-
-    // indexFun();
   }, []);
 
-  // const email = "test";
-  // const password = "testPass";
-  // createUserWithEmailAndPassword(auth, email, password)
-  //   .then((userCredential) => {
-  //     const user = userCredential.user;
-  //   })
-  //   .catch((error) => {
-  //     console.error(error);
-  //   });
+  useEffect(() => {
+    if (uid) {
+      const setDatas = async () => {
+        await setDoc(doc(db, "tests", uid), {
+          test: "テスト",
+          correct: 30
+        });
+        // console.log(uid);
+      };
+      setDatas();
+
+      const refTest = async () => {
+        const docSnap = await getDoc(doc(db, "tests", uid));
+        setData(docSnap.data());
+      };
+      refTest();
+    }
+  }, [uid]);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
 
   return (
     <>
@@ -62,6 +65,8 @@ const Auth: NextPage = () => {
       <button onClick={signIn}>this is test</button>
       <p>ユーザーuid: {uid}</p>
       <p>ログイン中のユーザー名: {name}</p>
+      <p>{data?.test}</p>
+      <p>{data?.correct}</p>
     </>
   );
 };
